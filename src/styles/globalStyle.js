@@ -1,7 +1,4 @@
 export const styles = {
-  body:{
-    backgroundColor:'#f9f9f9',
-  },
   '.wrapper': {
     maxWidth: '1410px',
     width: '94%',

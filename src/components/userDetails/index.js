@@ -1,19 +1,38 @@
-import { Avatar, Box, Flex, Heading, Text } from '@chakra-ui/react';
+import {
+  Avatar,
+  Box,
+  Flex,
+  Heading,
+  Text,
+  useColorMode,
+} from '@chakra-ui/react';
 import React from 'react';
 
 const UserDetails = ({ data }) => {
+  const { colorMode } = useColorMode();
   return (
     <Box p="30px 10px">
-      <Heading fontSize="22px" color="blackAlpha.500" mb="20px">
+      <Heading
+        fontSize="22px"
+        color={colorMode === 'dark' ? 'white' : 'blackAlpha.500'}
+        mb="20px"
+      >
         User Details
       </Heading>
       <Flex>
-        <Box border="1px" borderColor="blackAlpha.300" mr="8px" rounded="full">
+        <Box
+          border="1px"
+          borderColor={colorMode === 'dark' ? 'white' : 'blackAlpha.300'}
+          mr="8px"
+          rounded="full"
+        >
           <Avatar src={data?.image} />
         </Box>
         <Box>
           <Text fontWeight="600">{`${data?.firstName} ${data?.lastName}`}</Text>
-          <Text color="blackAlpha.600">Username: {data?.username}</Text>
+          <Text color={colorMode === 'dark' ? 'white' : 'blackAlpha.600'}>
+            Username: {data?.username}
+          </Text>
         </Box>
       </Flex>
       <Box>

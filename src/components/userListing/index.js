@@ -13,6 +13,7 @@ import {
   Th,
   Thead,
   Tr,
+  useColorMode,
 } from '@chakra-ui/react';
 import React from 'react';
 import { FaSearch, FaSortAlphaDownAlt } from 'react-icons/fa';
@@ -26,6 +27,7 @@ import {
 } from 'react-table';
 
 const UserListing = ({ users, setActiveUser, onOpen }) => {
+  const { colorMode } = useColorMode();
   const columns = React.useMemo(
     () => [
       {
@@ -62,13 +64,13 @@ const UserListing = ({ users, setActiveUser, onOpen }) => {
         w="350px"
         shadow="sm"
         border="1px"
-        borderColor="blackAlpha.100"
+        borderColor={colorMode === 'dark' ? 'white' : 'blackAlpha.100'}
         p="2px 15px"
         mb="20px"
         rounded="full"
       >
         <Flex alignItems="center">
-          <Box color="blackAlpha.400">
+          <Box color={colorMode === 'dark' ? 'white' : 'blackAlpha.400'}>
             <FaSearch />
           </Box>
           <Input
@@ -173,9 +175,9 @@ const UserListing = ({ users, setActiveUser, onOpen }) => {
                 }
                 cursor="pointer"
                 rounded="md"
-                shadow="sm"
+                shadow="md"
                 _hover={{
-                  shadow: 'md',
+                  shadow: 'lg',
                 }}
               >
                 {row.cells.map(cell => {
@@ -195,7 +197,10 @@ const UserListing = ({ users, setActiveUser, onOpen }) => {
         </Tbody>{' '}
       </Table>
       <Flex p="20px" alignItems="center" justifyContent="space-between">
-        <Text fontSize="14px" color="blackAlpha.600">
+        <Text
+          fontSize="14px"
+          color={colorMode === 'dark' ? 'white' : 'blackAlpha.600'}
+        >
           Showing {pageIndex + 1} of {pageOptions.length}
         </Text>{' '}
         <Flex>

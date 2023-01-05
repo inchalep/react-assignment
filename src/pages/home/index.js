@@ -7,6 +7,7 @@ import {
   DrawerOverlay,
   Heading,
   Text,
+  useColorMode,
   useDisclosure,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
@@ -22,6 +23,7 @@ const Home = () => {
   const btnRef = React.useRef();
   const { users } = useSelector(state => state.users);
   const dispatch = useDispatch();
+  const { colorMode } = useColorMode();
 
   useEffect(() => {
     dispatch(fetchUsers());
@@ -40,10 +42,18 @@ const Home = () => {
   return (
     <Box className="wrapper" p="45px 0">
       <Box w="full" p="10px 0 15px" textAlign="left">
-        <Heading color="blackAlpha.400" fontSize="24px" fontWeight="500">
+        <Heading
+          color={colorMode === 'dark' ? 'white' : 'blackAlpha.400'}
+          fontSize="24px"
+          fontWeight="500"
+        >
           Users
         </Heading>
-        <Text p="5px 0" fontSize="16px" color="blackAlpha.400">
+        <Text
+          p="5px 0"
+          fontSize="16px"
+          color={colorMode === 'dark' ? 'white' : 'blackAlpha.400'}
+        >
           Here are all the users for this project
         </Text>
       </Box>
