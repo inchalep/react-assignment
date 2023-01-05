@@ -156,7 +156,6 @@ const UserListing = ({ users, setActiveUser, onOpen }) => {
         <Tbody {...getTableBodyProps}>
           {page.map((row, i) => {
             prepareRow(row);
-            console.log(row, 'row');
             return (
               <Tr
                 onClick={() => {

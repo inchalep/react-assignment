@@ -2,7 +2,6 @@ import { Avatar, Box, Flex, Heading, Text } from '@chakra-ui/react';
 import React from 'react';
 
 const UserDetails = ({ data }) => {
-  console.log(data);
   return (
     <Box p="30px 10px">
       <Heading fontSize="22px" color="blackAlpha.500" mb="20px">

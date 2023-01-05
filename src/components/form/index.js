@@ -68,7 +68,6 @@ const LoginRegistration = () => {
         const user = allUsers.find(
           user => user.email === email && user.username === username
         );
-        console.log(user, 'useruser');
         if (user) {
           setErrs({
             ...errs,
