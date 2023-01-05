@@ -5,6 +5,8 @@ import {
   DrawerCloseButton,
   DrawerContent,
   DrawerOverlay,
+  Heading,
+  Text,
   useDisclosure,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
@@ -36,7 +38,15 @@ const Home = () => {
     }
   };
   return (
-    <Box className="wrapper">
+    <Box className="wrapper" p="45px 0">
+      <Box w="full" p="10px 0 15px" textAlign="left">
+        <Heading color="blackAlpha.400" fontSize="24px" fontWeight="500">
+          Users
+        </Heading>
+        <Text p="5px 0" fontSize="16px" color="blackAlpha.400">
+          Here are all the users for this project
+        </Text>
+      </Box>
       <UserListing
         users={users}
         setActiveUser={setActiveUser}
@@ -49,10 +59,10 @@ const Home = () => {
         finalFocusRef={btnRef}
       >
         <DrawerOverlay />
-        <DrawerContent>
+        <DrawerContent roundedTopLeft="3xl" w="800px !important">
           <DrawerCloseButton />
           <DrawerBody>
-            <UserDetails data={activeUserData}/>
+            <UserDetails data={activeUserData} />
           </DrawerBody>
         </DrawerContent>
       </Drawer>

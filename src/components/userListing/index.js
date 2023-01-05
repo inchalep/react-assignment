@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Flex,
   Icon,
@@ -14,8 +15,15 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import React from 'react';
-import { FaEdit, FaSortAlphaDownAlt, FaTrash } from 'react-icons/fa';
-import { useTable, useSortBy, usePagination } from 'react-table';
+import { FaSearch, FaSortAlphaDownAlt } from 'react-icons/fa';
+import {
+  useTable,
+  useSortBy,
+  usePagination,
+  useFilters,
+  useGlobalFilter,
+  useAsyncDebounce,
+} from 'react-table';
 
 const UserListing = ({ users, setActiveUser, onOpen }) => {
   const columns = React.useMemo(
@@ -38,6 +46,50 @@ const UserListing = ({ users, setActiveUser, onOpen }) => {
 
   const data = React.useMemo(() => users, [users]) || [];
 
+  const GlobalFilter = ({
+    preGlobalFilteredRows,
+    globalFilter,
+    setGlobalFilter,
+  }) => {
+    const count = preGlobalFilteredRows.length;
+    const [value, setValue] = React.useState(globalFilter);
+    const onChange = useAsyncDebounce(value => {
+      setGlobalFilter(value || undefined);
+    }, 200);
+
+    return (
+      <Flex
+        w="350px"
+        shadow="sm"
+        border="1px"
+        borderColor="blackAlpha.100"
+        p="2px 15px"
+        mb="20px"
+        rounded="full"
+      >
+        <Flex alignItems="center">
+          <Box color="blackAlpha.400">
+            <FaSearch />
+          </Box>
+          <Input
+            p="5px 10px"
+            value={value || ''}
+            onChange={e => {
+              setValue(e.target.value);
+              onChange(e.target.value);
+            }}
+            placeholder={`${count} records...`}
+            style={{
+              fontSize: '1.1rem',
+              border: '0',
+            }}
+            _focus={{ border: 'none', outline: 'none' }}
+          />
+        </Flex>
+      </Flex>
+    );
+  };
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -47,10 +99,12 @@ const UserListing = ({ users, setActiveUser, onOpen }) => {
     canPreviousPage,
     canNextPage,
     pageOptions,
-    gotoPage,
     nextPage,
     previousPage,
     setPageSize,
+    state,
+    preGlobalFilteredRows,
+    setGlobalFilter,
     state: { pageIndex, pageSize },
   } = useTable(
     {
@@ -58,61 +112,36 @@ const UserListing = ({ users, setActiveUser, onOpen }) => {
       data,
       initialState: { pageIndex: 0 },
     },
+    useFilters,
+    useGlobalFilter,
     useSortBy,
     usePagination
   );
   return (
     <TableContainer>
-      <Flex pb="10px" alignItems="center" justifyContent="flex-end">
-        <Button
-          m="0 10px"
-          onClick={() => previousPage()}
-          disabled={!canPreviousPage}
-        >
-          Prev
-        </Button>{' '}
-        <Button m="0 10px" onClick={() => nextPage()} disabled={!canNextPage}>
-          Next
-        </Button>{' '}
-        <Text>
-          Page {pageIndex + 1} of {pageOptions.length} | Go to page:{' '}
-          <Input
-            p="5px"
-            textAlign="center"
-            type="number"
-            defaultValue={pageIndex + 1}
-            onChange={e => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0;
-              gotoPage(page);
-            }}
-            w="50px"
-          />
-        </Text>{' '}
-        <Select
-          w="110px"
-          ml="10px"
-          value={pageSize}
-          onChange={e => {
-            setPageSize(Number(e.target.value));
-          }}
-        >
-          {[10, 20, 30, 40, 50].map(pageSize => (
-            <option key={pageSize} value={pageSize}>
-              Show {pageSize}
-            </option>
-          ))}
-        </Select>
-      </Flex>
-      <Table variant="simple" {...getTableProps()}>
+      <GlobalFilter
+        preGlobalFilteredRows={preGlobalFilteredRows}
+        globalFilter={state.globalFilter}
+        setGlobalFilter={setGlobalFilter}
+      />
+      <Table variant="simple" {...getTableProps()} className="listing-table">
         <Thead>
           {headerGroups.map(headerGroup => (
-            <Tr {...headerGroup.getHeaderGroupProps()}>
+            <Tr
+              shadow="md"
+              bg="gray.200"
+              rounded="md"
+              {...headerGroup.getHeaderGroupProps()}
+            >
               {headerGroup.headers.map(column => {
                 return (
                   <Th
+                    w="300px"
                     {...column.getHeaderProps(column.getSortByToggleProps())}
                     fontWeight="bold"
                     color="black"
+                    textAlign="left"
+                    p="15px 8px"
                   >
                     {column.render('Header')}{' '}
                     <span>
@@ -127,6 +156,7 @@ const UserListing = ({ users, setActiveUser, onOpen }) => {
         <Tbody {...getTableBodyProps}>
           {page.map((row, i) => {
             prepareRow(row);
+            console.log(row, 'row');
             return (
               <Tr
                 onClick={() => {
@@ -134,26 +164,27 @@ const UserListing = ({ users, setActiveUser, onOpen }) => {
                   onOpen();
                 }}
                 {...row.getRowProps()}
-                cursor="pointer"
-                bg={
-                  Object.values(row.values).includes('closed')
-                    ? 'closedTr'
-                    : Object.values(row.values).includes('delivered')
-                    ? 'trBg'
-                    : 'white'
+                borderLeft="4px"
+                borderColor={
+                  row.original.bloodGroup === 'O+'
+                    ? 'green'
+                    : row.original.bloodGroup === 'B+'
+                    ? 'orange'
+                    : 'red'
                 }
+                cursor="pointer"
+                rounded="md"
+                shadow="sm"
+                _hover={{
+                  shadow: 'md',
+                }}
               >
                 {row.cells.map(cell => {
                   return (
                     <Td
                       {...cell.getCellProps()}
-                      fontWeight={
-                        cell.column.Header === 'Id' ||
-                        cell.column.Header === 'Type' ||
-                        Object.values(row.values).includes('closed')
-                          ? '600'
-                          : '400'
-                      }
+                      fontSize="16px"
+                      p="20px 10px !important"
                     >
                       <Text as="span">{cell.render('Cell')}</Text>
                     </Td>
@@ -164,6 +195,37 @@ const UserListing = ({ users, setActiveUser, onOpen }) => {
           })}
         </Tbody>{' '}
       </Table>
+      <Flex p="20px" alignItems="center" justifyContent="space-between">
+        <Text fontSize="14px" color="blackAlpha.600">
+          Showing {pageIndex + 1} of {pageOptions.length}
+        </Text>{' '}
+        <Flex>
+          <Button
+            m="0 10px"
+            onClick={() => previousPage()}
+            disabled={!canPreviousPage}
+          >
+            Prev
+          </Button>{' '}
+          <Button m="0 10px" onClick={() => nextPage()} disabled={!canNextPage}>
+            Next
+          </Button>{' '}
+          <Select
+            w="110px"
+            ml="10px"
+            value={pageSize}
+            onChange={e => {
+              setPageSize(Number(e.target.value));
+            }}
+          >
+            {[10, 15, 50].map(pageSize => (
+              <option key={pageSize} value={pageSize}>
+                Show {pageSize}
+              </option>
+            ))}
+          </Select>
+        </Flex>
+      </Flex>
     </TableContainer>
   );
 };
