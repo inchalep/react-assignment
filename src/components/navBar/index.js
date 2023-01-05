@@ -7,10 +7,18 @@ import {
   UnorderedList,
 } from '@chakra-ui/react';
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { ColorModeSwitcher } from '../../ColorModeSwitcher';
+import { formFlagSet, setLoginStatus } from '../../redux/slices/login';
 
 const Navbar = () => {
+  const dispatch = useDispatch();
+
+  const logOut = () => {
+    dispatch(setLoginStatus());
+    dispatch(formFlagSet('login'));
+  };
   return (
     <header>
       <Box p="10px 0" shadow="md">
@@ -42,7 +50,7 @@ const Navbar = () => {
                 </NavLink>
               </ListItem>
               <ListItem>
-                <Text color="#e33c3c" cursor="pointer">
+                <Text color="#e33c3c" cursor="pointer" onClick={logOut}>
                   Logout
                 </Text>
               </ListItem>
