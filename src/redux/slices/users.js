@@ -7,7 +7,7 @@ const initialState = {
 
 export const fetchUsers = createAsyncThunk('users', async () => {
   const response = await _get('users');
-  return response.data.data;
+  return response.data.users;
 });
 
 export const usersSlice = createSlice({
@@ -16,7 +16,7 @@ export const usersSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder.addCase(fetchUsers.fulfilled, (state, action) => {
-      state.employees = action.payload;
+      state.users = action.payload;
     });
   },
 });
